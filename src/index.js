@@ -1,5 +1,5 @@
-require("dotenv").config();
-const { Client, IntentsBitField } = require("discord.js");
+require('dotenv').config();
+const { Client, IntentsBitField } = require('discord.js');
 
 const client = new Client({
   intents: [
@@ -10,19 +10,25 @@ const client = new Client({
   ],
 });
 
-client.on("ready", (c) => {
+client.on('ready', (c) => {
   console.log(`✅ ${c.user.tag} is online.`);
 });
 
-client.on("messageCreate", (message) => {
-  if (message.author.bot) {
-    return;
+client.on('interactionCreate', async (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
+
+  if (interaction.commandName === 'ping') {
+    await interaction.reply({ content: 'Pinging...', ephemeral: true });
+
+    const latency = Date.now() - interaction.createdTimestamp;
+    await interaction.editReply(`Pong! Latency: ${latency}ms`);
   }
 
-  if (message.content === "hello") {
-    message.reply(
-      "https://tenor.com/view/hello-there-hi-there-greetings-gif-9442662"
-    );
+  if (interaction.commandName === 'add') {
+    const num1 = interaction.options.get('first-number').value;
+    const num2 = interaction.options.get('second-number').value;
+
+    interaction.reply(`The sum is: ${num1 + num2}`);
   }
 });
 
